@@ -1,0 +1,50 @@
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      force: true
+  port: 80
+
+logging:
+  level:
+    root: info # 모든 라이브러리는 INFO 이상만 출력
+    com.tenco: debug # 내 프로젝트는 DEBUG 이상 모두 출력
+
+spring:
+  # 데이터베이스 연결 설정
+  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://localhost:3306/myblog?serverTimezone=Asia/Seoul
+#    username: root
+#    password: love3303
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:test;MODE=MySQL;
+    username: sa
+    password:
+
+  # 하이버네이트 초기화 이후 실행함
+  sql:
+    init:
+      data-locations:
+        - classpath:db/data.sql
+  jpa:
+    hibernate:
+      # create : 애플케이션 시작 시 테이블 새로 생성
+      ddl-auto: create
+    show-sql: true
+    properties:
+      hibernate:
+        # SQL 쿼리를 보기 좋게 포맷
+        format_sql: true
+
+    # data.sql 파일을 하이버네이트 초기화 이후에 실행
+    defer-datasource-initialization: true
+
+
+  devtools:
+    livereload:
+      enabled: true
+    restart:
+      enabled: true
+
+
