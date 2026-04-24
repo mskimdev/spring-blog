@@ -7,9 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -66,4 +64,51 @@ public class BoardController {
         return "board/list";
     }
 
+
+    // 게시글 상세보기 화면 요청
+    // http://localhost/board/1
+    @GetMapping("/board/{id}")
+    public String detail(@PathVariable(name = "id") Integer id, Model mo){
+        mo.addAttribute("board", boardNativeRepository.findById(id));
+
+
+        return "board/detail";
+    }
+
+
+    // 게시물 삭제 요청
+    // post -> redirect -> get 흐름
+    @PostMapping("/board/{id}/delete")
+    public String delete(@PathVariable(name="id") Integer id){
+        if(boardNativeRepository.deleteById(id)){
+            // PRG 패턴 (Post Redirect Get) 적용
+            return "redirect:/";
+        } else{
+            return "redirect:/board/{id}";
+        }
+    }
+
+    // 게시물 수정 시 게시물 수정 페이지로
+    @GetMapping("/board/{id}/update-form")
+    public String updateForm(@PathVariable(name="id") Integer id, Model mo){
+        // 사용자에게 해당 게시물 내용을 보여줘야 한다.
+        mo.addAttribute("board", boardNativeRepository.findById(id));
+        return "board/update-form";
+    }
+
+    @PostMapping("/board/{id}/update-form")
+    public String updateProc(
+            @PathVariable("id") Integer id,
+            @RequestParam("title") String title,
+            @RequestParam("content") String content){
+
+        if(boardNativeRepository.updateById(title, content, id)){
+            // redirect : view resolver 동작이 아닌
+            // 그냥 새로운 http get 요청임
+            return "redirect:/board/" + id;
+        }
+        else {
+            return "redirect:/board/" + id + "/update-form";
+        }
+    }
 }
